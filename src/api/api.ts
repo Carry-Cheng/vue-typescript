@@ -3,5 +3,6 @@ interface ApiObject {
   [propName: string]: string
 }
 export const API: ApiObject = {
-  'root': '/'
+  'root': '/',
+  'recommendList': '/recommend/list'
 }

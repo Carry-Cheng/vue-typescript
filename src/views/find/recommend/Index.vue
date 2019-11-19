@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     init () {
-      Get('root').then(result => {
+      Get('recommendList').then(result => {
         console.info(result)
       })
     }

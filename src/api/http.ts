@@ -1,5 +1,5 @@
 
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { API } from '@/api/api'
 
 export const HTTP = axios.create({
@@ -34,7 +34,12 @@ const getUrl = (url: string) => {
   }
 }
 
-export const Get = (url: string, config = {}) => {
+export const Get = (url: string, config: AxiosRequestConfig = {}) => {
+  if (!config.headers) {
+    config.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
   return HTTP.get(getUrl(url), config)
 }
 

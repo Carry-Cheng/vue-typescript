@@ -5,8 +5,24 @@
 </template>
 
 <script>
+import { Get } from '@/api/http'
 export default {
-  name: 'AppFindRecommend'
+  name: 'AppFindRecommend',
+  data() {
+    return {
+      
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    init () {
+      Get('root').then(result => {
+        console.info(result)
+      })
+    }
+  }
 }
 </script>
 

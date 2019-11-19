@@ -21,6 +21,34 @@ const routes = [
           {
             path: '/find/recommend',
             component: () => import('@/views/find/recommend/Index.vue')
+          },
+          {
+            path: '/find/rank',
+            component: () => import('@/views/find/rank-list/Index.vue')
+          }
+        ]
+      },
+      {
+        path: '/my',
+        redirect: '/my/index',
+        name: 'AppMy',
+        component: FrameNull,
+        children: [
+          {
+            path: '/my/index',
+            component: () => import('@/views/my/Index.vue')
+          }
+        ]
+      },
+      {
+        path: '/friends',
+        redirect: '/friends/index',
+        name: 'AppFriends',
+        component: FrameNull,
+        children: [
+          {
+            path: '/friends/index',
+            component: () => import('@/views/friends/Index.vue')
           }
         ]
       }

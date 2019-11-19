@@ -1,17 +1,17 @@
 <template>
-  <div class="app-find-recommend">
-    AppFindRecommend
+  <div class="app-my-index">
+    app-my-index
   </div>
 </template>
 
 <script>
 export default {
-  name: 'AppFindRecommend'
+  name: 'AppMyIndex'
 }
 </script>
 
 <style lang="less" scoped>
-.app-find-recommend {
+.app-my-index {
   
 }
 </style>

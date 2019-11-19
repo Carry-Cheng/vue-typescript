@@ -1,17 +1,17 @@
 <template>
-  <div class="app-find-recommend">
-    AppFindRecommend
+  <div class="app-find-rank-list">
+    App Find rank-list
   </div>
 </template>
 
 <script>
 export default {
-  name: 'AppFindRecommend'
+  name: 'AppFindRankList'
 }
 </script>
 
 <style lang="less" scoped>
-.app-find-recommend {
+.app-find-rank-list {
   
 }
 </style>

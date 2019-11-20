@@ -4,5 +4,5 @@ interface ApiObject {
 }
 export const API: ApiObject = {
   'root': '/',
-  'recommendList': '/recommend/list'
+  'findRecommendList': '/find/recommendList'
 }

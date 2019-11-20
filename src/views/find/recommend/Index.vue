@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     init () {
-      Get('recommendList').then(result => {
+      Get('findRecommendList').then(result => {
         console.info(result)
       })
     }

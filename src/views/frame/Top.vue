@@ -21,9 +21,11 @@
         <div class="app-login">登录</div>
       </div>
       <div class="app-absolute-right">
-        <i class="el-icon-search">
-
-        </i>
+        <i class="el-icon-search"></i>
+        <span style="margin: 0 10px;"></span>
+        <router-link target="_blank" to="/manager">
+          <el-button type="primary" icon="el-icon-headset">控制台</el-button>
+        </router-link>
       </div>
     </div>
     <!-- level 2 -->

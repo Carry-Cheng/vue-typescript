@@ -12,10 +12,8 @@ export default {
       minHeight: 400,
     }
   },
-  created() {
-    this.computedMinHeight()
-  },
   mounted() {
+    this.computedMinHeight()
     window.onresize = () => {
       this.computedMinHeight()
     }

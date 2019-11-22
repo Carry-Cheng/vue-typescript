@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import FrameIndex from '@/views/frame/Index.vue'
-import ManagerFrameIndex from '@/views/manager/manager-frame/Index.vue'
 import FrameNull from '@/views/frame/Null.vue'
-
+import ManagerRoutes from './manager-router'
 Vue.use(VueRouter)
 
 const routes = [
@@ -55,18 +54,7 @@ const routes = [
       }
     ]
   },
-  {
-    path: '/manager',
-    redirect: '/manager/welcome',
-    name: 'ManagerFrameIndex',
-    component: ManagerFrameIndex,
-    children: [
-      {
-        path: '/manager/welcome',
-        component: () => import('@/views/manager/welcome/Index.vue')
-      }
-    ]
-  },
+  ManagerRoutes,
   {
     path: '*',
     redirect: '/404',

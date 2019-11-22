@@ -1,6 +1,6 @@
 <template>
   <div class="manager-welcome">
-    hhhhhhhhhh
+    welcome
   </div>
 </template>
 

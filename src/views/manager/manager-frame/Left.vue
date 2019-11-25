@@ -23,6 +23,8 @@ export default {
     return {
       menus: [
         { name: '首页', path: '/manager/welcome' },
+        { name: '歌手管理', path: '/manager/singer' },
+        { name: '专辑管理', path: '/manager/album' },
         { name: '音乐管理', path: '/manager/music' }
       ],
       activeIndex: 0

@@ -39,6 +39,58 @@ export default   {
           }
         }
       ]
+    },
+    {
+      path: '/manager/album',
+      component: FrameNull,
+      mate: {
+        isMenu: true,
+        title: '专辑管理'
+      },
+      children: [
+        {
+          path: '/manager/album',
+          component: () => import('@/views/manager/album/Index.vue'),
+          mate: {
+            isMenu: false,
+            title: '专辑列表'
+          }
+        },
+        {
+          path: '/manager/album/new',
+          component: () => import('@/views/manager/album/Create.vue'),
+          mate: {
+            isMenu: false,
+            title: '新增专辑'
+          }
+        }
+      ]
+    },
+    {
+      path: '/manager/singer',
+      component: FrameNull,
+      mate: {
+        isMenu: true,
+        title: '歌手管理'
+      },
+      children: [
+        {
+          path: '/manager/singer',
+          component: () => import('@/views/manager/singer/Index.vue'),
+          mate: {
+            isMenu: false,
+            title: '歌手列表'
+          }
+        },
+        {
+          path: '/manager/singer/new',
+          component: () => import('@/views/manager/singer/Create.vue'),
+          mate: {
+            isMenu: false,
+            title: '新增歌手'
+          }
+        }
+      ]
     }
   ]
 }

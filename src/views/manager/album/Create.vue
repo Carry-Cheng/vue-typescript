@@ -1,5 +1,5 @@
 <template>
-  <div class="manager-music-create">
+  <div class="manager-album-create">
     <el-form ref="form"
       label-width="100px"
       :inline="true" :model="form" :rules="rules" class="form-create">
@@ -44,7 +44,7 @@
 </template>
 <script>
 export default {
-  name: 'ManagerMusicCreate',
+  name: 'ManagerAlbumCreate',
   data() {
     return {
       form: {
@@ -81,7 +81,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.manager-music-create {
+.manager-album-create {
   .form-create {
     padding: 0;
     .form-value-width { width: 248px; }

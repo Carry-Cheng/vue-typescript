@@ -4,5 +4,7 @@ interface ApiObject {
 }
 export const API: ApiObject = {
   'root': '/',
-  'findRecommendList': '/find/recommendList'
+  'findRecommendList': '/find/recommendList',
+  'createSinger': '/v1/manager/singer/createSinger',
+  'getSinger': '/v1/manager/singer/getSinger'
 }

@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="歌手简介" prop="info">
         <el-input class="form-value-width-textarea" type="textarea"
-          :rows="4" clearable v-model="form.info" placeholder="歌手简介"
+          :rows="5" clearable v-model="form.info" placeholder="歌手简介"
           maxlength="255"
           show-word-limit
         ></el-input>

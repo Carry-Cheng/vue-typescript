@@ -3,13 +3,12 @@
     <div class="filter">
       <div class="filter-item">
         <div class="filter-value">
-          <el-input clearable v-model="keyword" placeholder="歌手名"></el-input>
+          <el-input clearable v-model="params.keyword" placeholder="歌手名"></el-input>
         </div>
       </div>
       <div class="filter-item">
-        <el-button type="primary" icon="el-icon-search" @click="queryTools()">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="queryTools()" :disabled="tableLoading">查询</el-button>
       </div>
-      
     </div>
     <div class="group-btns">
       <el-button
@@ -22,6 +21,7 @@
     </div>
     <!-- table -->
     <el-table
+      v-loading="tableLoading"
       class="table"
       :data="table"
       border
@@ -41,6 +41,11 @@
         prop="sex"
         label="歌手性别"
         width="100">
+        <template slot-scope="scope">
+          <div v-if="scope.row.sex === 1">男</div>
+          <div v-else-if="scope.row.sex === 2">女</div>
+          <div v-else>组合</div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="country"
@@ -48,9 +53,29 @@
       </el-table-column>
       <el-table-column
         label="操作">
+        <template slot-scope="scope">
+          <el-button
+            @click="handleClickUpdate(scope.row)"
+            type="text">
+            编辑
+          </el-button>
+          <el-button
+            @click="handleClickDelete(scope.row)"
+            type="text">
+            移除
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
-
+    <el-pagination
+      background
+      layout="total, prev, pager, next"
+      class="pagination"
+      :current-page="params.pageNum"
+      :total="params.total"
+      @current-change="handlePageChange"
+      @size-change="handleSizeChange"
+    />
   </div>
 </template>
 
@@ -60,7 +85,13 @@ export default {
   name: 'ManagerSingerIndex',
   data() {
     return {
-      keyword: '',
+      tableLoading: false,
+      params: {
+        keyword: '',
+        pageSize: 10,
+        pageNum: 1,
+        total: 0
+      },
       table: []
     }
   },
@@ -71,12 +102,48 @@ export default {
     newCreate() {
       this.$router.push('/manager/singer/new')
     },
+    handleClickUpdate(row) {
+      console.info(row)
+      this.$message.warning('暂未开通')
+    },
+    handleClickDelete(row) {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message.warning('暂未开通')
+      }).catch(() => {})
+    },
+    handleSizeChange (size) {
+      this.params.pageNum = 1
+      this.params.pageSize = size
+      this.queryTools()
+    },
+    handlePageChange (page) {
+      this.params.pageNum = page
+      this.queryTools()
+    },
     queryTools () {
       let params = {}
-      params.keyword = this.keyword
-      Get('getSinger', { params }).then(result => {
-        console.info(result)
-        this.table = result.data
+      params.keyword = this.params.keyword
+      params.pageSize = this.params.pageSize
+      params.pageNum = this.params.pageNum
+      this.tableLoading = true
+      Get('getSinger', { params }).then(res => {
+        let { code, data, message } = res
+        this.tableLoading = false
+        if (code === 200) {
+          this.table = data.list
+          this.params.total = data.total
+        } else {
+          this.table = []
+          this.params.total = 0
+          this.$message.error(message)
+        }
+      }).catch(error => {
+        this.tableLoading = false
+        this.$message.error(error)
       })
     }
   }
@@ -100,6 +167,7 @@ export default {
     }
   }
   .group-btns { margin-bottom: 15px; }
-  .table {}
+  .table {margin-bottom: 15px;}
+  .pagination {text-align: right;}
 }
 </style>

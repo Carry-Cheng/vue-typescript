@@ -33,6 +33,7 @@
         <el-button
           type="warning"
           icon="el-icon-upload"
+          :disabled="loading"
           @click="handleSubmit()"
         >
           保存
@@ -47,6 +48,7 @@ export default {
   name: 'ManagerSingerCreate',
   data() {
     return {
+      loading: false,
       form: {
         name: '',
         sex: 1,
@@ -65,9 +67,19 @@ export default {
     handleSubmit() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
+          this.loading = true
           Post('createSinger', this.form)
           .then(res => {
-            this.$router.push('/manager/singer')
+            let { code, data, message } = res
+            this.loading = false
+            if (code === 200) {
+              this.$router.push('/manager/singer')
+            } else {
+              this.$message.error(message)
+            }
+          }).catch(error => {
+            this.loading = false
+            this.$message.error(error)
           })
         } else {
           console.log('error submit!!')

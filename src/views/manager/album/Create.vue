@@ -3,15 +3,18 @@
     <el-form ref="form"
       label-width="100px"
       :model="form" :rules="rules" class="form-create">
-      <el-form-item label="专辑名" prop="name">
+      <el-form-item label="专辑名" prop="albumName">
         <el-input class="form-value-width" clearable v-model="form.albumName" placeholder="专辑名"
           maxlength="32"
           show-word-limit
         ></el-input>
       </el-form-item>
-      <el-form-item label="歌手" prop="singer">
-        <!-- <el-input class="form-value-width" clearable v-model="form.singerId" placeholder="歌手"></el-input> -->
-        <xc-auto-search></xc-auto-search>
+      <el-form-item label="歌手" prop="singerId">
+        <xc-auto-search
+          v-model="form.singerId"
+          type="singer"
+          placeholder="请输入歌手ID,名称"
+        ></xc-auto-search>
       </el-form-item>
       <el-form-item label="发布日期" prop="publishTime">
         <el-date-picker
@@ -56,11 +59,13 @@ export default {
         albumInfo: ''
       },
       rules: {
-        name: [
+        albumName: [
           { required: true, message: '请输入专辑名称', trigger: 'blur' },
           { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
         ],
-        singer: []
+        singerId: [
+          { required: true, message: '请选择歌手', trigger: 'blur' }
+        ]
       }
     }
   },

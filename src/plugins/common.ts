@@ -1,5 +1,5 @@
 import Vue from 'vue'
-const XcAutoSearch = require('@/components/auto-search/Index')
+import XcAutoSearch from '@/components/auto-search/Index'
 const commonComponents = {
   install() {
     Vue.component('xc-auto-search', XcAutoSearch)

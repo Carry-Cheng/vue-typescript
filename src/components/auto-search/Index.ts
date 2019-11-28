@@ -1,44 +1,24 @@
-const SingerAutoSearch =  require('@/components/auto-search/SingerAutoSearch')
-export default {
-  name: 'xc-auto-search',
-  model: {
-    props: 'value',
-    event: 'change'
-  },
-  props: {
-    value: '',
-    type: {
-      type: String,
-      default: ''
-    },
-    placeholder: {
-      type: String,
-      default: '请输入内容'
-    },
-    clearable: {
-      type: Boolean,
-      default: true
-    }
-  },
+
+import { Vue, Component, Model, Prop } from 'vue-property-decorator'
+import SingerAutoSearch from '@/components/auto-search/SingerAutoSearch.vue'
+@Component({
+  name: 'xc-auto-search'
+})
+export default class XcAutoSearch extends Vue {
+  @Model('change') readonly value: any
+  @Prop(String) readonly type!: string
+  @Prop({default: '请输入内容'}) readonly placeholder!: string
+  @Prop({type: Boolean, default: true}) readonly clearable!: boolean
   render(h: any) {
-    let self: any = this
-    let $props = self.$props
-    let $type = $props.type
     let baseComponent = null
-    switch ($type) {
-      case 'singer':
-        baseComponent = SingerAutoSearch.default
-        break
-      default:
-        break
-    }
+    if (this.type === 'singer') baseComponent = SingerAutoSearch
     return h(
       baseComponent,
       {
-        props: $props,
+        props: this.$props,
         on: {
-          change(id: any) {
-            self.$emit('change', id)
+          change: (value: any) => {
+            this.$emit('change', value)
           }
         }
       }

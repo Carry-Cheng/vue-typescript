@@ -6,8 +6,13 @@
       <el-form-item label="歌曲名" prop="name">
         <el-input class="form-value-width" clearable v-model="form.name" placeholder="歌曲名"></el-input>
       </el-form-item>
-      <el-form-item label="歌手" prop="singer">
-        <el-input class="form-value-width" clearable v-model="form.singer" placeholder="歌手"></el-input>
+      <el-form-item label="歌手" prop="singerId">
+        <xc-auto-search
+          v-model="form.singerId"
+          class="form-value-width"
+          type="singer"
+          placeholder="请输入歌手ID,名称"
+        ></xc-auto-search>
       </el-form-item>
       <br>
       <el-form-item label="作曲人" prop="composer">
@@ -18,7 +23,12 @@
       </el-form-item>
       <br>
       <el-form-item label="专辑" prop="albumId">
-        <el-input class="form-value-width" clearable v-model="form.albumId" placeholder="专辑"></el-input>
+        <xc-auto-search
+          v-model="form.albumId"
+          class="form-value-width"
+          type="album"
+          placeholder="请输入专辑ID,名称"
+        ></xc-auto-search>
       </el-form-item>
       <el-form-item label="发行日期" prop="issueTime">
         <el-date-picker
@@ -34,6 +44,7 @@
         <el-button
           type="warning"
           icon="el-icon-upload"
+          :disabled="loading"
           @click="handleSubmit()"
         >
           保存
@@ -42,40 +53,49 @@
     </el-form>
   </div>
 </template>
-<script>
-export default {
-  name: 'ManagerMusicCreate',
-  data() {
-    return {
-      form: {
-        name: '',
-        singer: '',
-        composer: '',
-        lyricist: '',
-        albumId: '',
-        issueTime: ''
-      },
-      rules: {
-        name: [
-          { required: true, message: '请输入歌曲名称', trigger: 'blur' },
-          { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
-        ],
-        singer: []
+<script lang="ts">
+import { Vue, Component, Model, Prop } from 'vue-property-decorator'
+import { Post } from '@/api/http'
+@Component({
+  name: 'ManagerMusicCreate'
+})
+export default class ManagerMusicCreate extends Vue {
+  private loading: boolean = false
+  private form: any = {
+    name: undefined,
+    singerId: undefined,
+    composer: undefined,
+    lyricist: undefined,
+    albumId: undefined,
+    issueTime: undefined
+  }
+  private rules: any = {
+    name: [
+      { required: true, message: '请输入歌曲名称', trigger: 'blur' },
+      { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
+    ]
+  }
+
+  handleSubmit() {
+    let refsForm: any = this.$refs['form']
+    refsForm.validate((valid: any) => {
+      if (valid) {
+        this.loading = true
+        Post('createMusicInfo', this.form)
+        .then((res: any) => {
+          let { code, data, message } = res
+          this.loading = false
+          if (code === 200) {
+            this.$router.push('/manager/music')
+          } else {
+            this.$message.error(message)
+          }
+        }).catch(error => {
+          this.loading = false
+          this.$message.error(error)
+        })
       }
-    }
-  },
-  methods: {
-    handleSubmit() {
-      console.info('submit')
-      this.$refs['form'].validate((valid) => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    }
+    })
   }
 }
 </script>

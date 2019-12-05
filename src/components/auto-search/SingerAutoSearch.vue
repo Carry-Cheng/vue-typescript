@@ -54,7 +54,7 @@ export default {
           }
         }).catch(error => {
           this.options = []
-          this.$message.warning(message)
+          this.$message.warning(error)
         })
       }
     },

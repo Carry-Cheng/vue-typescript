@@ -11,5 +11,9 @@ export const API: ApiObject = {
   'searchSinger': '/v1/manager/singer/searchSinger',
   // 专辑管理
   'createAlbum': '/v1/manager/album/createAlbum',
-  'getAlbum': '/v1/manager/album/getAlbum'
+  'getAlbum': '/v1/manager/album/getAlbum',
+  'searchAlbum': '/v1/manager/album/searchAlbum',
+  // 音乐管理
+  'createMusicInfo': '/v1/manager/music/createMusicInfo',
+  'getMusicInfo': '/v1/manager/music/getMusicInfo'
 }

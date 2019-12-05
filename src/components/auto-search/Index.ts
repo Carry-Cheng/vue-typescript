@@ -1,6 +1,7 @@
 
 import { Vue, Component, Model, Prop } from 'vue-property-decorator'
 import SingerAutoSearch from '@/components/auto-search/SingerAutoSearch.vue'
+import AlbumAutoSearch from '@/components/auto-search/AlbumAutoSearch.vue'
 @Component({
   name: 'xc-auto-search'
 })
@@ -12,6 +13,7 @@ export default class XcAutoSearch extends Vue {
   render(h: any) {
     let baseComponent = null
     if (this.type === 'singer') baseComponent = SingerAutoSearch
+    if (this.type === 'album') baseComponent = AlbumAutoSearch
     return h(
       baseComponent,
       {

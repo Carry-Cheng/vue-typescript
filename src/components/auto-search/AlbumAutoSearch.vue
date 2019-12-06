@@ -10,7 +10,7 @@
       <el-option
         v-for="(v, index) in options"
         :key="index"
-        :label="v.albumName"
+        :label="v.name"
         :value="v.id">
       </el-option>
     </div>

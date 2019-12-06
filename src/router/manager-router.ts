@@ -37,6 +37,14 @@ export default   {
             isMenu: false,
             title: '新增音乐'
           }
+        },
+        {
+          path: '/manager/music/upload',
+          component: () => import('@/views/manager/music/Upload.vue'),
+          mate: {
+            isMenu: false,
+            title: '上传音乐'
+          }
         }
       ]
     },

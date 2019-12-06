@@ -24,7 +24,7 @@ export default {
 
 <style lang="less" scoped>
 .app-header {
-  width: 100%;
+  width: 100%; z-index: 9999;
   position: fixed; left: 0; top: 0; background: #ffffff; box-shadow: 8px -7px 9px 1px;
   .app-header-box {
     position: relative;

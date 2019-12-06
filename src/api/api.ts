@@ -5,6 +5,9 @@ interface ApiObject {
 export const API: ApiObject = {
   'root': '/',
   'findRecommendList': '/find/recommendList',
+  // 上传
+  'upload': '/v1/manager/upload/test',
+  'uploadMusic': '/v1/manager/upload/uploadMusic',
   // 歌手管理
   'createSinger': '/v1/manager/singer/createSinger',
   'getSinger': '/v1/manager/singer/getSinger',

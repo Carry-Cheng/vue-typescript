@@ -32,20 +32,38 @@
         width="250">
       </el-table-column>
       <el-table-column
-        prop="singer"
-        label="歌手"
-        width="180">
+        prop="singerName"
+        label="歌手">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="albumName"
         label="专辑">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="发行时间">
+        prop="publishTime"
+        label="专辑发行时间">
       </el-table-column>
       <el-table-column
-        label="操作">
+        label="操作"
+        width="150"
+      >
+        <template slot-scope="scope">
+          <el-button
+            @click="handleClickUpload(scope.row)"
+            type="text">
+            上传音乐
+          </el-button>
+          <el-button
+            @click="handleClickUpdate(scope.row)"
+            type="text">
+            编辑
+          </el-button>
+          <el-button
+            @click="handleClickDelete(scope.row)"
+            type="text">
+            移除
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -85,10 +103,18 @@ export default class ManagerMusicIndex extends Vue {
     this.$router.push('/manager/music/new')
   }
 
+  handleClickUpload(row: any) {
+    this.$router.push({
+      path: '/manager/music/upload',
+      query: row
+    })
+  }
+
   handleClickUpdate(row: any) {
     console.info(row)
     this.$message.warning('暂未开通')
   }
+
   handleClickDelete(row: any) {
     this.$confirm('此操作将永久删除, 是否继续?', '提示', {
       confirmButtonText: '确定',
@@ -98,15 +124,18 @@ export default class ManagerMusicIndex extends Vue {
       this.$message.warning('暂未开通')
     }).catch(() => {})
   }
+
   handleSizeChange (size: number) {
     this.params.pageNum = 1
     this.params.pageSize = size
     this.queryTools()
   }
+
   handlePageChange (page: number) {
     this.params.pageNum = page
     this.queryTools()
   }
+
   queryTools () {
     let params: any = {}
     params.keyword = this.params.keyword

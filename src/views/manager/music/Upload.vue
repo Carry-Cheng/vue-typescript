@@ -5,7 +5,8 @@
     <el-upload
       class="upload-demo"
       drag
-      action="/api/v1/manager/upload/uploadMusic"
+      :data="uploadParams"
+      action="/api/v1/manager/upload/music"
       :on-success="uploadMusicSuccess"
       :on-error="uploadMusicError"
     >
@@ -17,8 +18,11 @@
     <el-upload
       class="upload-demo"
       drag
-      action="/api/v1/manager/upload/music"
-      multiple>
+      :data="uploadParams"
+      action="/api/v1/manager/upload/lyric"
+      :on-success="uploadMusicSuccess"
+      :on-error="uploadMusicError"
+    >
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
       <div class="el-upload__tip" slot="tip">只能上传lrc文件，且不超过1M</div>
@@ -35,23 +39,38 @@ import { Post } from '@/api/http'
 export default class ManagerMusicUpload extends Vue {
   private titleName: string = ''
   private singerName: string = ''
+  private uploadParams: any = {
+    id: undefined,
+    sourceId: undefined
+  }
   get titleH1() {
     return `${this.titleName} - ${this.singerName}`
   }
   created() {
-    console.info(this.$route)
     let query: any = this.$route.query
-    let { name, singerName } = query
+    let { name, singerName, id, sourceId } = query
     this.titleName = name
     this.singerName = singerName
+    this.uploadParams.id = id
+    this.uploadParams.sourceId = sourceId
   }
 
   uploadMusicSuccess (response: any) {
-    console.info(response)
+    let { code, message } = response
+    if (code === 200) {
+      this.$message.success('上传成功')
+    } else {
+      this.$message.error(message)
+    }
   }
 
   uploadMusicError (response: any) {
-    console.info(response)
+    let { code, message } = response
+    if (code === 200) {
+      this.$message.success('上传成功')
+    } else {
+      this.$message.error(message)
+    }
   }
 
 }

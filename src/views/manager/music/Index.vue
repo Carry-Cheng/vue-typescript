@@ -40,8 +40,18 @@
         label="专辑">
       </el-table-column>
       <el-table-column
+        prop="dataSize"
+        label="音乐文件">
+      </el-table-column>
+      <el-table-column
+        prop="lyricSize"
+        label="歌词文件">
+      </el-table-column>
+      <el-table-column
         prop="publishTime"
-        label="专辑发行时间">
+        label="专辑发行时间"
+        width="100"
+      >
       </el-table-column>
       <el-table-column
         label="操作"
@@ -153,9 +163,9 @@ export default class ManagerMusicIndex extends Vue {
         this.params.total = 0
         this.$message.error(message)
       }
-    }).catch(error => {
+    }).catch((error: any) => {
       this.tableLoading = false
-      this.$message.error(error)
+      this.$message.error(error.message)
     })
   }
 }

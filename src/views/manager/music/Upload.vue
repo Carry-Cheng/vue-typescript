@@ -64,12 +64,10 @@ export default class ManagerMusicUpload extends Vue {
     }
   }
 
-  uploadMusicError (response: any) {
-    let { code, message } = response
-    if (code === 200) {
-      this.$message.success('上传成功')
-    } else {
-      this.$message.error(message)
+  uploadMusicError (error: any) {
+    let response = JSON.parse(error.message)
+    if (response) {
+      this.$message.error(response.message)
     }
   }
 

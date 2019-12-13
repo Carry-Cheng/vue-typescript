@@ -13,7 +13,7 @@ HTTP.interceptors.request.use(
     return config
   },
   error => {
-    return Promise.reject(error)
+    return error
   }
 )
 
@@ -22,7 +22,7 @@ HTTP.interceptors.response.use(
     return response.data
   },
   error => {
-    return Promise.reject(error)
+    return error
   }
 )
 
@@ -40,6 +40,11 @@ export const Get = (url: string, config: AxiosRequestConfig = {}) => {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   }
+  return HTTP.get(getUrl(url), config)
+}
+
+export const GetFile = (url: string, config: AxiosRequestConfig = {}) => {
+  config.responseType = 'arraybuffer'
   return HTTP.get(getUrl(url), config)
 }
 

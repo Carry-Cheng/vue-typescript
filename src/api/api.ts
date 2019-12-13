@@ -3,8 +3,13 @@ interface ApiObject {
   [propName: string]: string
 }
 export const API: ApiObject = {
+  // 前端API
   'root': '/',
-  'findRecommendList': '/find/recommendList',
+  // 公共模块
+  'getMusicSourceById': 'v1/app/common/source',
+  // 推荐模块
+  'findRecommendList': '/v1/app/recommend/list',
+  // 后台管理API -----------------------------------------------------------------------------------
   // 上传
   'upload': '/v1/manager/upload/test',
   'uploadMusic': '/v1/manager/upload/uploadMusic',

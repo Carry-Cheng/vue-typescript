@@ -72,13 +72,6 @@ export default {
         this.activeIndex = 3
       }
     }
-  },
-  created () {
-    console.info('created')
-    console.info(this.$route)
-  },
-  mounted () {
-    console.info('mounted')
   }
 }
 </script>

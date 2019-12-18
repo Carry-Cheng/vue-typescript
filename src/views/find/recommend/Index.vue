@@ -3,12 +3,13 @@
     <ul class="lists-ul">
       <li v-for="(v, index) in lists" :key="index" class="lists-li">
         <div class="li-index">
-          <el-badge value="hot"></el-badge>
+          <el-badge v-if="index < 3" value="hot"></el-badge>
+          <el-badge v-else :value="(index + 1)" type="warning"></el-badge>
         </div>
         <div class="li-center">{{ `${v.singerName} - ${v.musicName}` }}</div>
         <div class="li-operate">
           <el-tooltip content="立即播放">
-            <el-button @click="handleClickPlay(v.sourceId)" type="primary" icon="el-icon-video-play" circle></el-button>
+            <el-button @click="handleClickImmediatelyPlay(v)" type="primary" icon="el-icon-video-play" circle></el-button>
           </el-tooltip>
           <el-tooltip content="添加到播放列表">
             <el-button type="primary" icon="el-icon-folder-add" circle></el-button>
@@ -30,7 +31,8 @@
 
 <script lang="ts">
 import { Vue, Component, Model, Prop } from 'vue-property-decorator'
-import { Get, GetFile } from '@/api/http'
+import { Get } from '@/api/http'
+import { Music } from '@/td/types.d'
 @Component({
   name: 'AppFindRecommend'
 })
@@ -56,18 +58,18 @@ export default class AppFindRecommend extends Vue {
     })
   }
 
+  private handleClickImmediatelyPlay (music: Music) {
+    this.$store.dispatch('immediatelyPlay', music)
+  }
+
   handleClickPlay (sourceId: number) {
     this.getMusicSourceById(sourceId)
   }
 
   private getMusicSourceById (sourceId: number) {
+    // sourceId = 100
     Get('getMusicSourceById', { params: {sourceId} }).then((res: any) => {
-      let { code, data, message } = res
-      if (code === 200) {
-        console.info(data)
-      } else {
-        this.$message.info(message)
-      }
+      console.info(res)
     }).catch(error => {
       this.$message.info(error)
     })

@@ -44,7 +44,8 @@ export const Get = (url: string, config: AxiosRequestConfig = {}) => {
 }
 
 export const GetFile = (url: string, config: AxiosRequestConfig = {}) => {
-  config.responseType = 'arraybuffer'
+  // config.responseType = 'arraybuffer'
+  // config.responseType = 'blob'
   return HTTP.get(getUrl(url), config)
 }
 

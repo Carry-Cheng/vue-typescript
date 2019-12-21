@@ -5,7 +5,7 @@
       <div class="player-control-btn">
         <i v-if="isPlay" class="cc-iconfont cc-iconzanting" title="暂停" @click="handleClickPlay(false)"></i>
         <i v-else class="cc-iconfont cc-iconbofang" title="播放" @click="handleClickPlay(true)"></i>
-        <i v-if="isLoading" class="el-icon-loading control-loading" title="加载中..."></i>
+        <i v-if="!isLoaded" class="el-icon-loading control-loading" title="加载中..."></i>
       </div>
       <i class="cc-iconfont cc-iconxiayiqu cc-iconfont-small" title="下一曲"></i>
     </div>
@@ -18,24 +18,56 @@
         </div>
         <div class="player-song-down">
           <div class="player-song-progress">
-            <el-progress 
+            <el-progress
               :text-inside="true"
               :stroke-width="14"
-              :percentage="20"
+              :percentage="percentage"
               status="warning"
               :show-text="false"
             ></el-progress>
           </div>
           <div class="player-song-times">
-            <span class="player-song-times-start">{{'00:25'}}</span>
+            <span class="player-song-times-start">{{ currentMusicTimeText }}</span>
             <span class="player-song-times-flag">/</span>
-            <span class="player-song-times-end">{{'04:25'}}</span>
+            <span class="player-song-times-end">{{ currentMusicTotalTimeText }}</span>
           </div>
         </div>
       </div>
       
     </div>
-    <div class="player-operate"></div>
+    <div class="player-operate">
+      <el-popover
+        v-model="playStatusPopover"
+        placement="top"
+        width="1"
+        popper-class="play-type-popover"
+        trigger="click">
+        <div class="play-type-content">
+          <i @click="handleChangePlayStatus(0)" class="cc-iconfont cc-iconsort" title="循环播放"></i>
+          <i @click="handleChangePlayStatus(1)" class="cc-iconfont cc-iconsuijisenlin" title="随机播放"></i>
+          <i @click="handleChangePlayStatus(2)" class="cc-iconfont cc-icondanquxunhuan" title="单曲循环"></i>
+        </div>
+        <div slot="reference" class="play-type">
+          <i class="cc-iconfont cc-icondanquxunhuan" title="单曲循环"></i>
+        </div>
+      </el-popover>
+      <el-popover
+        v-model="playVolumePopover"
+        placement="top"
+        width="1"
+        popper-class="play-type-popover"
+        trigger="click">
+        <div class="play-type-content">
+          playVolumePopover
+        </div>
+        <div slot="reference" class="play-type">
+          <i class="cc-iconfont cc-iconshengyin" title="音量调整"></i>
+        </div>
+      </el-popover>
+      <span>
+        <i @click="handleMusicList()" class="cc-iconfont cc-iconA_-bofangliebiao" title="歌曲列表"></i>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -44,70 +76,131 @@ import { Vue, Component, Model, Prop, Watch } from 'vue-property-decorator'
 import { Get } from '@/api/http'
 import Player from '@/core/player'
 import { Music } from '@/td/types.d'
+import { PlayStatus } from '@/enum/global'
 @Component({
   name: 'VuePlayer'
 })
 export default class VuePlayer extends Vue {
   private readonly player: Player = Player.getInstance()
+  private playStatusPopover: boolean = false
+  private playVolumePopover: boolean = false
+  private currentId: number = -1
+  private interval: number = -1
   private isPlay: boolean = false
-  private isLoading: boolean = false
+  private isLoaded: boolean = true
   private currentMusicName: string = ''
   private currentMusicSinger: string = ''
-  private currentMusicPercentage: number = 0
-  private currentMusicTime: string = ''
-  private currentMusicTotalTime: string = ''
+  private percentage: number = 0
+  private currentMusicTime: number = 0
+  private currentMusicTotalTime: number = 0
   private playerList: Array<Music> = []
 
   get vuePlayerHelper () {
     return this.$store.getters.playerHelper
   }
 
+  get currentMusicTimeText () {
+    if (this.currentMusicTime > 0 && this.currentMusicTime >= this.currentMusicTotalTime) {
+      this.player.isEnd = true
+    } else {
+      this.player.isEnd = false
+    }
+    return this.secondToMS(this.currentMusicTime)
+  }
+
+  get currentMusicTotalTimeText () {
+    return this.secondToMS(this.currentMusicTotalTime)
+  }
+
+
   @Watch('vuePlayerHelper')
   onChangeValueVuePlayerHelper(v: Music) {
-    this.isLoading = true
+    this.isLoaded = false
     this.isPlay = true
     this.currentMusicName = v.musicName || '~~~'
     this.currentMusicSinger = v.singerName || '~~~'
-    this.getMusicSourceById(v.sourceId)
+    this.currentMusicTime = 0
+    this.currentMusicTotalTime = 0
+    this.percentage = 0
+    this.currentId = v.id
+    this.player.loadSource(v)
   }
 
-  @Watch('player.isLoading')
-  onChangeValueIsLoading(v: boolean) {
-    this.isLoading = v
+  @Watch('player.isLoaded')
+  onChangeValueIsLoaded(isLoaded: boolean) {
+    this.isLoaded = isLoaded
+    this.currentMusicTime = 0
+    this.currentMusicTotalTime = 0
+    if (isLoaded) {
+      this.currentMusicTotalTime = this.player.getAudioDuration()
+      this.startInterval()
+    }
   }
 
-  mounted() {
-    this.initPlayer()
-  }
-  
-  private initPlayer () {
-    this.player.isLoading
-    console.info(this.player)
+  @Watch('player.playStatus')
+  onChangeValuePlayStatus(playStatus: number) {
+    console.info('playStatus', playStatus)
   }
 
-  private getMusicSourceById (sourceId: number) {
-    // sourceId = 100
-    Get('getMusicSourceById', { params: {sourceId} }).then((res: any) => {
-      let { code, data, message } = res
-      if (code === 200) {
-        let buffer = data.data
-        this.player.loadSourceStream(buffer)
-      } else {
-        this.$message.info(message)
+  private startInterval () {
+    clearInterval(this.interval)
+    this.interval = setInterval(() => {
+      if (this.currentMusicTime < this.currentMusicTotalTime) {
+        this.currentMusicTime++
       }
-    }).catch(error => {
-      this.$message.info(error)
-    })
+      if (this.percentage >= 100) {
+        clearInterval(this.interval)
+        this.interval = -1
+        return false
+      }
+      if (this.currentMusicTotalTime === 0 ) {
+        this.percentage = 0
+      } else {
+        this.percentage = Math.round((this.currentMusicTime / this.currentMusicTotalTime) * 100)
+      }
+    }, 1000)
+  }
+
+  private stopInterval () {
+    clearInterval(this.interval)
+    this.interval = -1
+  }
+
+  private secondToMS (second: number) {
+    if (second) {
+      let m = Math.floor(second / 60)
+      let s = second % 60
+      return `${(Array(2).join('0') + m).slice(-2)}:${(Array(2).join('0') + s).slice(-2)}`
+    } else {
+      return '00:00'
+    }
   }
 
   handleClickPlay (flag: boolean) {
+    if (this.player.playList.length === 0) {
+      this.$message.info('请添加歌曲.')
+      return false
+    }
     if (flag) {
       this.isPlay = true
-      this.player.play()
+      this.startInterval()
+      this.player.play(this.currentId, this.currentMusicTime)
     } else {
       this.isPlay = false
       this.player.stop()
+      this.stopInterval()
     }
+  }
+
+  handleChangePlayStatus (status: number) {
+    this.playStatusPopover = false
+    this.player.autoSetPlayStatus(status)
+  }
+
+  handleMusicList () {
+    this.player.isEnd = true
+    console.info(this.player.playList)
+    console.info(this.player.playListMap)
   }
 
 }
@@ -138,7 +231,7 @@ export default class VuePlayer extends Vue {
     .player-song {
       flex: 1; height: 70px;
       .player-song-up {
-        padding: 0 10px; height: 30px; display: flex; justify-content: start; align-items: flex-end;
+        padding: 0 10px; height: 30px; display: flex; justify-content: flex-start; align-items: flex-end;
         .player-song-name {
           margin-right: 30px; font-size: 14px; color: #cccccc; font-weight: 400;
         }
@@ -150,7 +243,7 @@ export default class VuePlayer extends Vue {
         width: 100%; height: 30px; display: flex; justify-content: center; align-items: center;
         .player-song-progress {
           flex: 1;
-          min-width: 400px;
+          min-width: 300px;
           margin: 0 10px;
         }
         .player-song-times {
@@ -163,6 +256,33 @@ export default class VuePlayer extends Vue {
       }
     }
   }
-  .player-operate {}
+  .player-operate {
+    width: 120px; height: 30px; display: flex; justify-content: flex-start; align-items: flex-end;
+    margin-top: 5px; cursor: pointer;
+    span {
+      margin: 0 5px;
+      i { font-size: 14px; color: #cccccc; font-weight: 400; }
+    }
+  }
+}
+</style>
+
+<style lang="less">
+.play-type-popover {
+  z-index: 3310 !important; min-width: 14px !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0) !important;
+  .popper__arrow { border-top-color: rgba(0, 0, 0, 0.8) !important; }
+  .popper__arrow::after { border-top-color: rgba(0, 0, 0, 0.8) !important; }
+  .play-type-content {
+    width: 20px; cursor: pointer;
+    display: flex; justify-content: center; flex-direction: column;
+    i { font-size: 14px; color: #eeeeee; font-weight: 400; }
+    i:hover { color: #ffffff; }
+  }
+}
+.play-type {
+  display: flex; width: 100%; justify-content: center; align-items: center;
+  i { font-size: 14px; color: #cccccc; font-weight: 400; }
 }
 </style>

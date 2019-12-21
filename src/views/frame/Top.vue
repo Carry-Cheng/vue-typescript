@@ -24,7 +24,7 @@
         <i class="el-icon-search"></i>
         <span style="margin: 0 10px;"></span>
         <router-link target="_blank" to="/manager">
-          <el-button type="primary" icon="el-icon-headset">控制台</el-button>
+          <el-button type="primary" icon="el-icon-setting">控制台</el-button>
         </router-link>
       </div>
     </div>

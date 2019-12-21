@@ -13,3 +13,8 @@ export declare interface Music {
 export declare interface MusicMap {
   [propName: number]: Music
 }
+
+export declare interface MusicDecodeDataMap {
+  [propName: number]: AudioBuffer
+}
+

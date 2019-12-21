@@ -8,21 +8,11 @@
         </div>
         <div class="li-center">{{ `${v.singerName} - ${v.musicName}` }}</div>
         <div class="li-operate">
-          <el-tooltip content="立即播放">
-            <el-button @click="handleClickImmediatelyPlay(v)" type="primary" icon="el-icon-video-play" circle></el-button>
-          </el-tooltip>
-          <el-tooltip content="添加到播放列表">
-            <el-button type="primary" icon="el-icon-folder-add" circle></el-button>
-          </el-tooltip>
-          <el-tooltip content="笔芯">
-            <el-button type="warning" icon="el-icon-star-on" circle></el-button>
-          </el-tooltip>
-          <el-tooltip content="分享">
-            <el-button type="warning" icon="el-icon-share" circle></el-button>
-          </el-tooltip>
-          <el-tooltip content="下载">
-            <el-button type="warning" icon="el-icon-download" circle></el-button>
-          </el-tooltip>
+          <el-button title="立即播放" @click="handleClickImmediatelyPlay(v)" type="primary" icon="el-icon-video-play" circle></el-button>
+          <el-button title="添加到播放列表" type="primary" icon="el-icon-folder-add" circle></el-button>
+          <el-button title="笔芯" type="warning" icon="el-icon-star-on" circle></el-button>
+          <el-button title="分享" type="warning" icon="el-icon-share" circle></el-button>
+          <el-button title="下载" type="warning" icon="el-icon-download" circle></el-button>
         </div>
       </li>
     </ul>
@@ -60,19 +50,6 @@ export default class AppFindRecommend extends Vue {
 
   private handleClickImmediatelyPlay (music: Music) {
     this.$store.dispatch('immediatelyPlay', music)
-  }
-
-  handleClickPlay (sourceId: number) {
-    this.getMusicSourceById(sourceId)
-  }
-
-  private getMusicSourceById (sourceId: number) {
-    // sourceId = 100
-    Get('getMusicSourceById', { params: {sourceId} }).then((res: any) => {
-      console.info(res)
-    }).catch(error => {
-      this.$message.info(error)
-    })
   }
 
 }

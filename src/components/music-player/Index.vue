@@ -1,6 +1,7 @@
 <template>
   <div class="music-player">
-    <player></player>
+    <player @board-visible="handleBoardVisible"></player>
+    <board :board-visible="boardVisible"></board>
   </div>
 </template>
 
@@ -8,11 +9,16 @@
 import { Vue, Component, Model, Prop } from 'vue-property-decorator'
 import { Get } from '@/api/http'
 import Player from '@/components/music-player/Player.vue'
+import Board from '@/components/music-player/Board.vue'
 @Component({
   name: 'MusicPlayer',
-  components: { Player }
+  components: { Player, Board }
 })
 export default class MusicPlayer extends Vue {
+  private boardVisible: boolean = false
+  handleBoardVisible (visible: boolean) {
+    this.boardVisible = visible
+  }
 
 }
 </script>
@@ -20,6 +26,6 @@ export default class MusicPlayer extends Vue {
 <style lang="less" scoped>
 .music-player {
   position: fixed; left: 0; bottom: 0; width: 100%; height: 90px; z-index: 3306;
-  background: rgba(0, 0, 0, .8)
+  background: rgb(44, 44, 44)
 }
 </style>

@@ -65,7 +65,9 @@
         </div>
       </el-popover>
       <span>
-        <i @click="handleMusicList()" class="cc-iconfont cc-iconA_-bofangliebiao" title="歌曲列表"></i>
+        <i @click="handleMusicList()" class="cc-iconfont cc-iconA_-bofangliebiao" title="歌曲列表">
+          <span class="number">{{ playList.length > 0 ? playList.length : '' }}</span>
+        </i>
       </span>
     </div>
   </div>
@@ -74,14 +76,14 @@
 <script lang="ts">
 import { Vue, Component, Model, Prop, Watch } from 'vue-property-decorator'
 import { Get } from '@/api/http'
-import Player from '@/core/player'
+import { Player } from '@/core/player'
 import { Music } from '@/td/types.d'
 import { PlayStatus } from '@/enum/global'
 @Component({
   name: 'VuePlayer'
 })
 export default class VuePlayer extends Vue {
-  private readonly player: Player = Player.getInstance()
+  private readonly player = Player
   private playStatusPopover: boolean = false
   private playVolumePopover: boolean = false
   private currentId: number = -1
@@ -93,7 +95,8 @@ export default class VuePlayer extends Vue {
   private percentage: number = 0
   private currentMusicTime: number = 0
   private currentMusicTotalTime: number = 0
-  private playerList: Array<Music> = []
+  private playList: Array<Music> = []
+  private visibleBoard: boolean = false
 
   get vuePlayerHelper () {
     return this.$store.getters.playerHelper
@@ -132,6 +135,7 @@ export default class VuePlayer extends Vue {
     this.currentMusicTime = 0
     this.currentMusicTotalTime = 0
     if (isLoaded) {
+      this.playList = this.player.getPlayList()
       this.currentMusicTotalTime = this.player.getAudioDuration()
       this.startInterval()
     }
@@ -198,9 +202,8 @@ export default class VuePlayer extends Vue {
   }
 
   handleMusicList () {
-    this.player.isEnd = true
-    console.info(this.player.playList)
-    console.info(this.player.playListMap)
+    this.visibleBoard = !this.visibleBoard
+    this.$emit('board-visible', this.visibleBoard)
   }
 
 }
@@ -258,10 +261,14 @@ export default class VuePlayer extends Vue {
   }
   .player-operate {
     width: 120px; height: 30px; display: flex; justify-content: flex-start; align-items: flex-end;
-    margin-top: 5px; cursor: pointer;
+    margin-top: 5px; 
     span {
       margin: 0 5px;
-      i { font-size: 14px; color: #cccccc; font-weight: 400; }
+      i { 
+        font-size: 14px; color: #cccccc; font-weight: 400; cursor: pointer;
+        .number { font-size: 12px; }
+      }
+      i:hover { color: #ffffff; }
     }
   }
 }

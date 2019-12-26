@@ -1,3 +1,4 @@
+
 export declare interface Music {
   id: number
   sourceId: number
@@ -17,4 +18,14 @@ export declare interface MusicMap {
 export declare interface MusicDecodeDataMap {
   [propName: number]: AudioBuffer
 }
+
+export declare interface WatchConfig {
+  immediate: boolean
+}
+
+export declare interface WatchProxyMap {
+  handler: string
+  config: WatchConfig
+}
+
 

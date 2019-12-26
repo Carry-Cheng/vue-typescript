@@ -1,19 +1,11 @@
+import ProxyHandler from '@/core/proxy'
 import { Music, MusicMap, MusicDecodeDataMap } from '@/td/types'
 import { Get } from '@/api/http'
 import { PlayStatus } from '@/enum/global'
 import { Watch } from '@/core/decorator'
 import ElementUI from 'element-ui'
 
-export default class Player {
-
-  static instance: Player
-
-  static getInstance (): Player {
-    if (!this.instance) {
-      this.instance = new Player()
-    }
-    return this.instance
-  }
+class PlayerProxy {
 
   isEnd: boolean = false
   isLoaded: boolean = false
@@ -37,6 +29,7 @@ export default class Player {
     this.biquadFilter = this.audioContext.createBiquadFilter()
   }
 
+  // @Watch('isEnd', {immediate: true})
   @Watch('isEnd')
   onChangeIsEnd(value: boolean) {
     console.info('onChangeIsEnd', value)
@@ -151,3 +144,5 @@ export default class Player {
   }
 
 }
+
+export const Player = ProxyHandler.createProxy(new PlayerProxy())

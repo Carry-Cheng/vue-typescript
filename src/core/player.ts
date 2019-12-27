@@ -1,18 +1,19 @@
 import ProxyHandler from '@/core/proxy'
-import { Music, MusicMap, MusicDecodeDataMap } from '@/td/types'
+import { Music } from '@/td/types'
 import { Get } from '@/api/http'
 import { PlayStatus } from '@/enum/global'
 import { Watch } from '@/core/decorator'
 import ElementUI from 'element-ui'
 
-class PlayerProxy {
+class Player {
 
   isEnd: boolean = false
   isLoaded: boolean = false
   playStatus: number = PlayStatus.whole
-  decodeDataMap: MusicDecodeDataMap = {}
+  decodeDataMap: Map<number, AudioBuffer> = new Map<number, AudioBuffer>()
   playList: Array<Music> = []
-  playListMap: MusicMap = {}
+  playListMap: Map<number, Music> = new Map<number, Music>()
+  currentPlayInfo: Music | undefined = undefined
   private readonly audioContext: AudioContext
   private bufferSource: AudioBufferSourceNode
   private readonly analyser: AnalyserNode
@@ -33,9 +34,14 @@ class PlayerProxy {
   @Watch('isEnd')
   onChangeIsEnd(value: boolean) {
     console.info('onChangeIsEnd', value)
+    if (value) {
+      console.info(value)
+      // this.handlePlay()
+    }
   }
 
   getPlayList (): Array<Music> {
+    console.info('getPlayList')
     return this.playList
   }
 
@@ -64,9 +70,12 @@ class PlayerProxy {
   }
 
   play (id: number, offset: number = 0) {
-    if (this.decodeDataMap[id]) {
+    if (this.playListMap.has(id)) {
+      this.currentPlayInfo = this.playListMap.get(id)
+    }
+    if (this.decodeDataMap.has(id)) {
       this.bufferSource = this.audioContext.createBufferSource()
-      this.bufferSource.buffer = this.decodeDataMap[id]
+      this.bufferSource.buffer = this.decodeDataMap.get(id) || null
       this.bufferSource.connect(this.audioContext.destination)
       this.audioContext.resume()
       this.bufferSource.start(0, offset)
@@ -74,6 +83,7 @@ class PlayerProxy {
   }
 
   stop () {
+    console.info('stop')
     if (this.bufferSource.context.state === 'running') {
       this.bufferSource.stop()
       this.audioContext.suspend()
@@ -97,13 +107,34 @@ class PlayerProxy {
     }
   }
 
+  private handlePlay() {
+    console.info('play end.')
+    console.info(`current play status: ${this.playStatus}`)
+    console.info(this.currentPlayInfo)
+    switch (this.playStatus) {
+      case PlayStatus.whole:
+        this.playStatus = PlayStatus.whole
+        break
+      case PlayStatus.random:
+        this.playStatus = PlayStatus.random
+        break
+      case PlayStatus.single:
+        this.playStatus = PlayStatus.single
+        break
+      default:
+        this.playStatus = PlayStatus.single
+        break
+    }
+  }
+
   loadSource (music: Music): void {
     this.isLoaded = false
     this.stop()
+    this.currentPlayInfo = music
     // cache
-    if (this.decodeDataMap[music.id]) {
+    if (this.decodeDataMap.has(music.id)) {
       this.bufferSource = this.audioContext.createBufferSource()
-      this.bufferSource.buffer = this.decodeDataMap[music.id]
+      this.bufferSource.buffer = this.decodeDataMap.get(music.id) || null
       this.bufferSource.connect(this.audioContext.destination)
       this.bufferSource.start(0)
       if (this.getContextState() === 'suspended') {
@@ -129,9 +160,9 @@ class PlayerProxy {
             if (this.getContextState() === 'suspended') {
               this.audioContext.resume()
             }
-            this.decodeDataMap[music.id] = decodeData
+            this.decodeDataMap.set(music.id, decodeData)
             this.playList.push(music)
-            this.playListMap[music.id] = music
+            this.playListMap.set(music.id, music)
           })
         } else {
           ElementUI.Message(message)
@@ -145,4 +176,4 @@ class PlayerProxy {
 
 }
 
-export const Player = ProxyHandler.createProxy(new PlayerProxy())
+export default ProxyHandler.createProxy(new Player()) as Player

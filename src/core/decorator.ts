@@ -1,6 +1,6 @@
 
 import ProxyHandler from '@/core/proxy'
-import { WatchConfig, WatchProxyMap } from '@/td/types'
+import { WatchConfig } from '@/td/types'
 
 // Watch decorator
 export function Watch (propertyName: string, config: WatchConfig = {
@@ -8,12 +8,11 @@ export function Watch (propertyName: string, config: WatchConfig = {
 }) {
   return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     if (!ProxyHandler.proxy.has(propertyName)) {
-      let watchProxyMap: WatchProxyMap = {
-        handler: methodName,
+      ProxyHandler.proxy.set(propertyName, {
+        name: methodName,
+        handler: target[methodName],
         config
-      }
-      ProxyHandler.proxy.set(propertyName, watchProxyMap)
-      ProxyHandler.proxyFirst.set(propertyName, false)
+      })
     }
   }
 }

@@ -11,20 +11,13 @@ export declare interface Music {
   star?: number
 }
 
-export declare interface MusicMap {
-  [propName: number]: Music
-}
-
-export declare interface MusicDecodeDataMap {
-  [propName: number]: AudioBuffer
-}
-
 export declare interface WatchConfig {
   immediate: boolean
 }
 
 export declare interface WatchProxyMap {
-  handler: string
+  name: string,
+  handler: Function
   config: WatchConfig
 }
 

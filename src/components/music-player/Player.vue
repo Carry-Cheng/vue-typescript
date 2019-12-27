@@ -76,7 +76,7 @@
 <script lang="ts">
 import { Vue, Component, Model, Prop, Watch } from 'vue-property-decorator'
 import { Get } from '@/api/http'
-import { Player } from '@/core/player'
+import Player from '@/core/player'
 import { Music } from '@/td/types.d'
 import { PlayStatus } from '@/enum/global'
 @Component({
@@ -89,6 +89,7 @@ export default class VuePlayer extends Vue {
   private currentId: number = -1
   private interval: number = -1
   private isPlay: boolean = false
+  private isEnd: boolean = false
   private isLoaded: boolean = true
   private currentMusicName: string = ''
   private currentMusicSinger: string = ''
@@ -104,9 +105,9 @@ export default class VuePlayer extends Vue {
 
   get currentMusicTimeText () {
     if (this.currentMusicTime > 0 && this.currentMusicTime >= this.currentMusicTotalTime) {
-      this.player.isEnd = true
+      this.isEnd = true
     } else {
-      this.player.isEnd = false
+      this.isEnd = false
     }
     return this.secondToMS(this.currentMusicTime)
   }
@@ -115,6 +116,12 @@ export default class VuePlayer extends Vue {
     return this.secondToMS(this.currentMusicTotalTime)
   }
 
+  @Watch('isEnd')
+  onChangeValueIsEnd(isEnd: number) {
+    if (isEnd) {
+      this.player.isEnd = true
+    }
+  }
 
   @Watch('vuePlayerHelper')
   onChangeValueVuePlayerHelper(v: Music) {
@@ -144,6 +151,10 @@ export default class VuePlayer extends Vue {
   @Watch('player.playStatus')
   onChangeValuePlayStatus(playStatus: number) {
     console.info('playStatus', playStatus)
+  }
+
+  mounted() {
+    console.info(this.player)
   }
 
   private startInterval () {
@@ -202,6 +213,9 @@ export default class VuePlayer extends Vue {
   }
 
   handleMusicList () {
+    // this.isEnd = true
+    this.player.getPlayList()
+    this.player.onChangeIsEnd(true)
     this.visibleBoard = !this.visibleBoard
     this.$emit('board-visible', this.visibleBoard)
   }

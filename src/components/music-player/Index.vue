@@ -1,7 +1,7 @@
 <template>
   <div class="music-player">
     <player @board-visible="handleBoardVisible"></player>
-    <board :board-visible="boardVisible"></board>
+    <!-- <board :board-visible="boardVisible"></board> -->
   </div>
 </template>
 

@@ -27,7 +27,7 @@
 <script lang="ts">
 import { Vue, Component, Model, Prop, Watch } from 'vue-property-decorator'
 import { Get } from '@/api/http'
-import { Player } from '@/core/player'
+import Player from '@/core/player'
 import { Music } from '@/td/types'
 @Component({
   name: 'MusicBoard'
@@ -56,7 +56,6 @@ export default class MusicPlayer extends Vue {
 
   updatePlayerList() {
     this.playList = this.player.getPlayList()
-    console.info(this.playList)
   }
 
   resize(event?: UIEvent) {

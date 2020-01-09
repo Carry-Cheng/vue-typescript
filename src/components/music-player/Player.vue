@@ -1,13 +1,17 @@
 <template>
   <div class="player">
     <div class="player-control">
-      <i class="cc-iconfont cc-iconxiayiqu rotate180 cc-iconfont-small" title="上一曲"></i>
+      <i class="cc-iconfont cc-iconxiayiqu rotate180 cc-iconfont-small" title="上一曲"
+        @click="handleClickLast()"
+      ></i>
       <div class="player-control-btn">
         <i v-if="isPlay" class="cc-iconfont cc-iconzanting" title="暂停" @click="handleClickPlay(false)"></i>
         <i v-else class="cc-iconfont cc-iconbofang" title="播放" @click="handleClickPlay(true)"></i>
         <i v-if="!isLoaded" class="el-icon-loading control-loading" title="加载中..."></i>
       </div>
-      <i class="cc-iconfont cc-iconxiayiqu cc-iconfont-small" title="下一曲"></i>
+      <i class="cc-iconfont cc-iconxiayiqu cc-iconfont-small" title="下一曲"
+        @click="handleClickNext()"
+      ></i>
     </div>
     <div class="player-music">
       <div class="player-singer-flag" :style="{backgroundImage: `url('${require('@/assets/images/GEM2.jpg')}')`}"></div>
@@ -48,7 +52,9 @@
           <i @click="handleChangePlayStatus(2)" class="cc-iconfont cc-icondanquxunhuan" title="单曲循环"></i>
         </div>
         <div slot="reference" class="play-type">
-          <i class="cc-iconfont cc-icondanquxunhuan" title="单曲循环"></i>
+          <i v-if="playStatus === 0" class="cc-iconfont cc-iconsort" title="循环播放"></i>
+          <i v-if="playStatus === 1" class="cc-iconfont cc-iconsuijisenlin" title="随机播放"></i>
+          <i v-if="playStatus === 2" class="cc-iconfont cc-icondanquxunhuan" title="单曲循环"></i>
         </div>
       </el-popover>
       <el-popover
@@ -84,6 +90,7 @@ import { PlayStatus } from '@/enum/global'
 })
 export default class VuePlayer extends Vue {
   private readonly player = Player
+  private playStatus: number = PlayStatus.whole
   private playStatusPopover: boolean = false
   private playVolumePopover: boolean = false
   private currentId: number = -1
@@ -119,7 +126,9 @@ export default class VuePlayer extends Vue {
   @Watch('isEnd')
   onChangeValueIsEnd(isEnd: number) {
     if (isEnd) {
-      this.player.isEnd = true
+      this.player.cutSongNumber++
+      this.currentMusicTime = 0
+      this.currentMusicTotalTime = 0
     }
   }
 
@@ -146,11 +155,6 @@ export default class VuePlayer extends Vue {
       this.currentMusicTotalTime = this.player.getAudioDuration()
       this.startInterval()
     }
-  }
-
-  @Watch('player.playStatus')
-  onChangeValuePlayStatus(playStatus: number) {
-    console.info('playStatus', playStatus)
   }
 
   mounted() {
@@ -192,7 +196,7 @@ export default class VuePlayer extends Vue {
   }
 
   handleClickPlay (flag: boolean) {
-    if (this.player.playList.length === 0) {
+    if (this.playList.length === 0) {
       this.$message.info('请添加歌曲.')
       return false
     }
@@ -207,15 +211,51 @@ export default class VuePlayer extends Vue {
     }
   }
 
+  handleClickNext() {
+    if (this.playList.length > 1) {
+      let index = this.playList.findIndex((element: Music) => this.currentId === element.id)
+      index++
+      if (index >= this.playList.length) {
+        index = 0
+      }
+      if (this.playList[index]) {
+        this.cutSong(this.playList[index])
+      }
+    }
+  }
+
+  handleClickLast() {
+    if (this.playList.length > 1) {
+      let index = this.playList.findIndex((element: Music) => this.currentId === element.id)
+      index--
+      if (index < 0) {
+        index = this.playList.length - 1
+      }
+      if (this.playList[index]) {
+        this.cutSong(this.playList[index])
+      }
+    }
+  }
+
+  cutSong(music: Music, offset?: number) {
+    this.currentId = music.id
+    this.currentMusicTime = 0
+    this.currentMusicTotalTime = 0
+    this.currentMusicName = music.musicName || '~~~'
+    this.currentMusicSinger = music.singerName || '~~~'
+    this.player.stop()
+    this.startInterval()
+    this.player.play(music.id, offset)
+    this.currentMusicTotalTime = this.player.getAudioDuration()
+  }
+
   handleChangePlayStatus (status: number) {
+    this.playStatus = status
     this.playStatusPopover = false
     this.player.autoSetPlayStatus(status)
   }
 
   handleMusicList () {
-    // this.isEnd = true
-    this.player.getPlayList()
-    this.player.onChangeIsEnd(true)
     this.visibleBoard = !this.visibleBoard
     this.$emit('board-visible', this.visibleBoard)
   }

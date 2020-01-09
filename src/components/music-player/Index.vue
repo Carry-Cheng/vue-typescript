@@ -1,7 +1,7 @@
 <template>
   <div class="music-player">
     <player @board-visible="handleBoardVisible"></player>
-    <!-- <board :board-visible="boardVisible"></board> -->
+    <board :board-visible="boardVisible"></board>
   </div>
 </template>
 
@@ -19,13 +19,12 @@ export default class MusicPlayer extends Vue {
   handleBoardVisible (visible: boolean) {
     this.boardVisible = visible
   }
-
 }
 </script>
 
 <style lang="less" scoped>
 .music-player {
-  position: fixed; left: 0; bottom: 0; width: 100%; height: 90px; z-index: 3306;
+  position: fixed; left: 0; bottom: 0; width: 100%; height: 90px; z-index: 1306;
   background: rgb(44, 44, 44)
 }
 </style>

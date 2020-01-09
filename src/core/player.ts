@@ -1,13 +1,14 @@
+
 import ProxyHandler from '@/core/proxy'
 import { Music } from '@/td/types'
 import { Get } from '@/api/http'
 import { PlayStatus } from '@/enum/global'
 import { Watch } from '@/core/decorator'
-import ElementUI from 'element-ui'
+import { Exception, ExceptionCode } from '@/core/exception'
 
 class Player {
 
-  isEnd: boolean = false
+  cutSongNumber: number = 0
   isLoaded: boolean = false
   playStatus: number = PlayStatus.whole
   decodeDataMap: Map<number, AudioBuffer> = new Map<number, AudioBuffer>()
@@ -30,18 +31,12 @@ class Player {
     this.biquadFilter = this.audioContext.createBiquadFilter()
   }
 
-  // @Watch('isEnd', {immediate: true})
-  @Watch('isEnd')
-  onChangeIsEnd(value: boolean) {
-    console.info('onChangeIsEnd', value)
-    if (value) {
-      console.info(value)
-      // this.handlePlay()
-    }
+  @Watch('cutSongNumber')
+  onChangeCutSongNumber(value: number) {
+    this.handlePlay()
   }
 
   getPlayList (): Array<Music> {
-    console.info('getPlayList')
     return this.playList
   }
 
@@ -83,7 +78,6 @@ class Player {
   }
 
   stop () {
-    console.info('stop')
     if (this.bufferSource.context.state === 'running') {
       this.bufferSource.stop()
       this.audioContext.suspend()
@@ -108,22 +102,38 @@ class Player {
   }
 
   private handlePlay() {
-    console.info('play end.')
-    console.info(`current play status: ${this.playStatus}`)
-    console.info(this.currentPlayInfo)
-    switch (this.playStatus) {
-      case PlayStatus.whole:
-        this.playStatus = PlayStatus.whole
-        break
-      case PlayStatus.random:
-        this.playStatus = PlayStatus.random
-        break
-      case PlayStatus.single:
-        this.playStatus = PlayStatus.single
-        break
-      default:
-        this.playStatus = PlayStatus.single
-        break
+    if (this.currentPlayInfo) {
+      let { id } = this.currentPlayInfo
+      let currentIndex = undefined
+      switch (this.playStatus) {
+        case PlayStatus.whole:
+          currentIndex = this.playList.findIndex((element: Music) => {
+            return id === element.id
+          })
+          currentIndex++
+          if (currentIndex >= this.playList.length) {
+            currentIndex = 0
+          }
+          this.currentPlayInfo = this.playListMap.get(this.playList[currentIndex].id)
+          if (this.currentPlayInfo) {
+            this.play(this.currentPlayInfo.id)
+          }
+          break
+        case PlayStatus.random:
+          currentIndex = Math.floor(Math.random() * this.playList.length)
+          this.currentPlayInfo = this.playListMap.get(this.playList[currentIndex].id)
+          if (this.currentPlayInfo) {
+            this.play(this.currentPlayInfo.id)
+          }
+          break
+        case PlayStatus.single:
+          this.play(this.currentPlayInfo.id)
+          break
+        default:
+          break
+      }
+    } else {
+      Exception.code(ExceptionCode.UNDEFINED, 'currentPlayInfo')
     }
   }
 
@@ -165,10 +175,10 @@ class Player {
             this.playListMap.set(music.id, music)
           })
         } else {
-          ElementUI.Message(message)
+          Exception.message(message)
         }
       }).catch(error => {
-        ElementUI.Message(error)
+        Exception.message(error)
       })
     }
     
